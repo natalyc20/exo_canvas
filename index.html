@@ -1,0 +1,1385 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ExO Canvas - Evaluación de Organización Exponencial</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+            padding: 3rem;
+            margin-bottom: 2rem;
+        }
+        
+        .hidden { display: none; }
+        
+        h1 {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        h2 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+        
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #8b5cf6;
+        }
+        
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.125rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            justify-content: center;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
+            color: white;
+            width: 100%;
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(139, 92, 246, 0.5);
+        }
+        
+        .btn-secondary {
+            background: #e5e7eb;
+            color: #374151;
+        }
+        
+        .btn-secondary:hover {
+            background: #d1d5db;
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #10b981 0%, #14b8a6 100%);
+            color: white;
+            width: 100%;
+        }
+        
+        .info-box {
+            background: linear-gradient(135deg, #ede9fe 0%, #dbeafe 100%);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: #e5e7eb;
+            border-radius: 999px;
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #8b5cf6 0%, #3b82f6 50%, #10b981 100%);
+            transition: width 0.5s ease;
+        }
+        
+        .question-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .question-card.answered {
+            border-color: #8b5cf6;
+            background: #f5f3ff;
+        }
+        
+        .option {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .option:hover {
+            background: #f9fafb;
+            border-color: #8b5cf6;
+        }
+        
+        .option.selected {
+            background: #f5f3ff;
+            border-color: #8b5cf6;
+            font-weight: 600;
+        }
+        
+        .option-radio {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #d1d5db;
+            border-radius: 50%;
+            margin-right: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .option.selected .option-radio {
+            border-color: #8b5cf6;
+            background: #8b5cf6;
+        }
+        
+        .option.selected .option-radio::after {
+            content: '✓';
+            color: white;
+            font-weight: bold;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-left: auto;
+        }
+        
+        .flex {
+            display: flex;
+        }
+        
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .gap-4 {
+            gap: 1rem;
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        .score-display {
+            font-size: 4rem;
+            font-weight: bold;
+            color: #8b5cf6;
+        }
+        
+        .category-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-top: 4px solid;
+        }
+        
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .priority-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #f5f3ff 0%, #dbeafe 100%);
+            border: 2px solid #8b5cf6;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+        }
+        
+        .priority-number {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+        
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            border-left: 4px solid;
+        }
+        
+        .alert-success {
+            background: #d1fae5;
+            border-color: #10b981;
+            color: #065f46;
+        }
+        
+        .alert-error {
+            background: #fee2e2;
+            border-color: #ef4444;
+            color: #991b1b;
+        }
+        
+        .alert-info {
+            background: #dbeafe;
+            border-color: #3b82f6;
+            color: #1e40af;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem 0.5rem;
+            }
+            
+            .card {
+                padding: 1.5rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .grid-3 {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- IMPORTANTE: Reemplaza con tu Web3Forms Access Key -->
+    <script>
+        const WEB3FORMS_ACCESS_KEY = "TU_ACCESS_KEY_AQUI"; // Obtén gratis en: https://web3forms.com
+    </script>
+
+    <div class="container">
+        
+        <!-- Pantalla 1: Contacto -->
+        <div id="contactScreen" class="card">
+            <div class="text-center">
+                <h1 style="justify-content: center;">
+                    <span style="font-size: 4rem;">🚀</span>
+                    ExO Canvas
+                </h1>
+                <p style="font-size: 1.25rem; color: #6b7280; margin-bottom: 0.5rem;">
+                    Evaluación de Organización Exponencial
+                </p>
+                <p style="font-size: 0.875rem; color: #9ca3af;">
+                    Con envío automático a Web3Forms
+                </p>
+            </div>
+
+            <div class="info-box" style="margin-top: 2rem;">
+                <h2 style="font-size: 1.125rem;">📋 Información de Contacto</h2>
+                <p style="color: #4b5563;">
+                    Complete sus datos. Al finalizar, los resultados se enviarán automáticamente por email.
+                </p>
+            </div>
+
+            <div class="input-group">
+                <label>Nombre de la Empresa *</label>
+                <input type="text" id="companyName" placeholder="Ej: Camarones del Pacífico S.A.">
+            </div>
+
+            <div class="input-group">
+                <label>Nombre Completo *</label>
+                <input type="text" id="personName" placeholder="Ej: Juan Pérez">
+            </div>
+
+            <div class="input-group">
+                <label>Email *</label>
+                <input type="email" id="email" placeholder="Ej: juan@empresa.com">
+            </div>
+
+            <div class="input-group">
+                <label>Cargo</label>
+                <input type="text" id="position" placeholder="Ej: Gerente General">
+            </div>
+
+            <div class="input-group">
+                <label>Teléfono</label>
+                <input type="tel" id="phone" placeholder="Ej: +593 99 123 4567">
+            </div>
+
+            <div class="input-group">
+                <label>Sector</label>
+                <select id="sector">
+                    <option value="">Seleccione...</option>
+                    <option value="Camaronero">Camaronero</option>
+                    <option value="Agrícola - Banano">Agrícola - Banano</option>
+                    <option value="Agrícola - Cacao">Agrícola - Cacao</option>
+                    <option value="Agrícola - Flores">Agrícola - Flores</option>
+                    <option value="Ganadero">Ganadero</option>
+                    <option value="Agroindustrial">Agroindustrial</option>
+                    <option value="Otro">Otro</option>
+                </select>
+            </div>
+
+            <button onclick="startEvaluation()" class="btn btn-primary">
+                🚀 Comenzar Evaluación
+            </button>
+        </div>
+
+        <!-- Pantalla 2: Evaluación -->
+        <div id="evaluationScreen" class="hidden">
+            <div class="card">
+                <div class="flex-between" style="margin-bottom: 2rem;">
+                    <div>
+                        <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem;">
+                            <span style="font-size: 3rem;">🚀</span>
+                            ExO Canvas
+                        </h1>
+                        <p id="companyNameDisplay" style="font-size: 1.125rem; color: #6b7280;"></p>
+                    </div>
+                    <div style="text-align: right;">
+                        <p style="font-size: 0.875rem; color: #9ca3af;">Progreso</p>
+                        <p id="progressPercent" style="font-size: 2rem; font-weight: bold; color: #8b5cf6;">0%</p>
+                    </div>
+                </div>
+
+                <div class="progress-bar">
+                    <div id="progressBar" class="progress-fill" style="width: 0%"></div>
+                </div>
+
+                <div style="margin-bottom: 2rem;">
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                        <span id="currentIcon" style="font-size: 3rem;"></span>
+                        <div>
+                            <h2 id="currentAttributeName" style="font-size: 1.5rem; margin-bottom: 0.25rem;"></h2>
+                            <p id="currentAttributeDesc" style="color: #6b7280; font-size: 0.875rem;"></p>
+                        </div>
+                    </div>
+                    <div id="categoryBadge" style="display: inline-block; padding: 0.5rem 1rem; border-radius: 999px; font-size: 0.875rem; font-weight: 600;"></div>
+                </div>
+            </div>
+
+            <div id="questionsContainer"></div>
+
+            <div class="nav-buttons">
+                <button onclick="previousAttribute()" id="prevBtn" class="btn btn-secondary">
+                    ← Anterior
+                </button>
+                <button onclick="nextAttribute()" id="nextBtn" class="btn btn-primary" style="width: auto;">
+                    Siguiente →
+                </button>
+                <button onclick="showResults()" id="finishBtn" class="btn btn-primary hidden" style="width: auto;">
+                    🏆 Ver Resultados
+                </button>
+            </div>
+        </div>
+
+        <!-- Pantalla 3: Resultados -->
+        <div id="resultsScreen" class="hidden">
+            <div class="card">
+                <div class="flex-between" style="margin-bottom: 2rem;">
+                    <div>
+                        <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem;">
+                            <span style="font-size: 3rem;">🚀</span>
+                            Resultados ExO
+                        </h1>
+                        <p id="resultsCompanyName" style="font-size: 1.25rem; color: #6b7280; font-weight: 600;"></p>
+                    </div>
+                    <button onclick="resetEvaluation()" class="btn" style="background: #8b5cf6; color: white;">
+                        🔄 Nueva Evaluación
+                    </button>
+                </div>
+
+                <button onclick="submitToWeb3Forms()" id="submitBtn" class="btn btn-success">
+                    📧 Enviar Resultados por Email (Web3Forms)
+                </button>
+
+                <div id="submitStatus" class="hidden"></div>
+
+                <div style="background: linear-gradient(135deg, #ede9fe 0%, #dbeafe 50%, #d1fae5 100%); border-radius: 16px; padding: 2rem; margin-top: 1rem;">
+                    <div class="flex-between">
+                        <div>
+                            <p style="color: #6b7280; font-size: 1.125rem; margin-bottom: 1rem;">Puntaje ExO Total</p>
+                            <p class="score-display">
+                                <span id="scoreValue">0</span><span style="font-size: 2rem; color: #9ca3af;">/165</span>
+                            </p>
+                            <div style="margin-top: 1rem;">
+                                <div style="width: 400px; max-width: 100%; height: 16px; background: #e5e7eb; border-radius: 999px; overflow: hidden;">
+                                    <div id="scoreBar" style="height: 100%; background: #8b5cf6; transition: width 0.5s; width: 0%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <p id="levelIcon" style="font-size: 5rem; margin-bottom: 0.5rem;">🐌</p>
+                            <p id="levelName" style="font-size: 1.5rem; font-weight: bold; color: #8b5cf6;">Organización Lineal</p>
+                        </div>
+                    </div>
+                    <div style="margin-top: 1.5rem; padding: 1.5rem; background: white; border-radius: 12px;">
+                        <p id="levelDescription" style="color: #4b5563; font-size: 1.125rem;"></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-3">
+                <div class="category-card" style="border-top-color: #8b5cf6;">
+                    <div class="flex-between" style="margin-bottom: 1rem;">
+                        <div>
+                            <h3 style="font-size: 1.25rem; font-weight: bold;">MTP</h3>
+                            <p style="font-size: 0.875rem; color: #6b7280;">Propósito Masivo</p>
+                        </div>
+                        <div style="text-align: right;">
+                            <p id="mtpScore" style="font-size: 2rem; font-weight: bold; color: #8b5cf6;">0</p>
+                            <p style="font-size: 0.875rem; color: #9ca3af;">/10</p>
+                        </div>
+                    </div>
+                    <div style="width: 100%; height: 12px; background: #e5e7eb; border-radius: 999px; overflow: hidden;">
+                        <div id="mtpBar" style="height: 100%; background: #8b5cf6; transition: width 0.5s; width: 0%;"></div>
+                    </div>
+                </div>
+
+                <div class="category-card" style="border-top-color: #10b981;">
+                    <div class="flex-between" style="margin-bottom: 1rem;">
+                        <div>
+                            <h3 style="font-size: 1.25rem; font-weight: bold;">SCALE</h3>
+                            <p style="font-size: 0.875rem; color: #6b7280;">Externos (5)</p>
+                        </div>
+                        <div style="text-align: right;">
+                            <p id="scaleScore" style="font-size: 2rem; font-weight: bold; color: #10b981;">0</p>
+                            <p style="font-size: 0.875rem; color: #9ca3af;">/75</p>
+                        </div>
+                    </div>
+                    <div style="width: 100%; height: 12px; background: #e5e7eb; border-radius: 999px; overflow: hidden;">
+                        <div id="scaleBar" style="height: 100%; background: #10b981; transition: width 0.5s; width: 0%;"></div>
+                    </div>
+                </div>
+
+                <div class="category-card" style="border-top-color: #3b82f6;">
+                    <div class="flex-between" style="margin-bottom: 1rem;">
+                        <div>
+                            <h3 style="font-size: 1.25rem; font-weight: bold;">IDEAS</h3>
+                            <p style="font-size: 0.875rem; color: #6b7280;">Internos (5)</p>
+                        </div>
+                        <div style="text-align: right;">
+                            <p id="ideasScore" style="font-size: 2rem; font-weight: bold; color: #3b82f6;">0</p>
+                            <p style="font-size: 0.875rem; color: #9ca3af;">/80</p>
+                        </div>
+                    </div>
+                    <div style="width: 100%; height: 12px; background: #e5e7eb; border-radius: 999px; overflow: hidden;">
+                        <div id="ideasBar" style="height: 100%; background: #3b82f6; transition: width 0.5s; width: 0%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 style="font-size: 2rem; margin-bottom: 1.5rem;">📈 Top 3 Prioridades de Mejora</h2>
+                <div id="prioritiesContainer"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script>
+        // Variables globales
+        let contactData = {};
+        let responses = {};
+        let currentAttributeIndex = 0;
+
+        // Definición completa de atributos ExO
+        const exoAttributes = [
+            {
+                id: 'mtp',
+                name: 'MTP - Propósito Masivo Transformador',
+                shortName: 'MTP',
+                icon: '🎯',
+                color: '#8b5cf6',
+                category: 'core',
+                description: 'Propósito aspiracional que inspira',
+                questions: [
+                    {
+                        id: 'mtp1',
+                        text: '¿Su empresa tiene un propósito claro más allá de generar ganancias?',
+                        options: [
+                            { value: 1, label: 'No tenemos propósito definido' },
+                            { value: 2, label: 'Misión/visión genérica' },
+                            { value: 3, label: 'Propósito definido interno' },
+                            { value: 4, label: 'Propósito inspirador estratégico' },
+                            { value: 5, label: 'MTP transformador' }
+                        ]
+                    },
+                    {
+                        id: 'mtp2',
+                        text: '¿Su propósito inspira a su equipo?',
+                        options: [
+                            { value: 1, label: 'Sin conexión emocional' },
+                            { value: 2, label: 'Trabajan solo por salario' },
+                            { value: 3, label: 'Algunos conectados' },
+                            { value: 4, label: 'Motiva al equipo' },
+                            { value: 5, label: 'Genera comunidad apasionada' }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 'staff',
+                name: 'Staff on Demand',
+                shortName: 'Staff',
+                icon: '👥',
+                color: '#10b981',
+                category: 'scale',
+                description: 'Talento bajo demanda',
+                questions: [
+                    {
+                        id: 's1',
+                        text: '¿Utiliza trabajadores temporales o por proyecto?',
+                        options: [
+                            { value: 1, label: 'Solo empleados fijos' },
+                            { value: 2, label: 'Ocasionalmente temporales' },
+                            { value: 3, label: 'Regularmente temporales' },
+                            { value: 4, label: 'Red de especialistas on-demand' },
+                            { value: 5, label: 'Modelo 70%+ on-demand' }
+                        ]
+                    },
+                    {
+                        id: 's2',
+                        text: '¿Accede a expertise sin contratación permanente?',
+                        options: [
+                            { value: 1, label: 'Debemos contratar fijo' },
+                            { value: 2, label: 'Consultores ocasionales' },
+                            { value: 3, label: 'Consultores regulares' },
+                            { value: 4, label: 'Red de expertos disponibles' },
+                            { value: 5, label: 'Plataformas globales 24/7' }
+                        ]
+                    },
+                    {
+                        id: 's3',
+                        text: '¿Usa plataformas digitales para encontrar talento?',
+                        options: [
+                            { value: 1, label: 'Solo referencias personales' },
+                            { value: 2, label: 'Anuncios tradicionales' },
+                            { value: 3, label: 'Portales de empleo básicos' },
+                            { value: 4, label: 'Plataformas especializadas' },
+                            { value: 5, label: 'APIs con plataformas globales' }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 'community',
+                name: 'Community & Crowd',
+                shortName: 'Comunidad',
+                icon: '🌐',
+                color: '#3b82f6',
+                category: 'scale',
+                description: 'Comunidades activas',
+                questions: [
+                    {
+                        id: 'c1',
+                        text: '¿Tiene comunidad activa alrededor de su marca?',
+                        options: [
+                            { value: 1, label: 'Sin comunidad' },
+                            { value: 2, label: 'Clientes leales sin interacción' },
+                            { value: 3, label: 'Grupo WhatsApp/Facebook' },
+                            { value: 4, label: 'Comunidad digital comprometida' },
+                            { value: 5, label: 'Comunidad masiva co-creadora' }
+                        ]
+                    },
+                    {
+                        id: 'c2',
+                        text: '¿Sus clientes participan en innovación?',
+                        options: [
+                            { value: 1, label: 'Decidimos todo internamente' },
+                            { value: 2, label: 'Opiniones ocasionales' },
+                            { value: 3, label: 'Encuestas regulares' },
+                            { value: 4, label: 'Co-creación con clientes' },
+                            { value: 5, label: 'Crowdsourcing activo' }
+                        ]
+                    },
+                    {
+                        id: 'c3',
+                        text: '¿Usa crowdfunding o pre-ventas?',
+                        options: [
+                            { value: 1, label: 'Invertimos primero' },
+                            { value: 2, label: 'Preguntamos ocasionalmente' },
+                            { value: 3, label: 'Pre-ventas regulares' },
+                            { value: 4, label: 'Plataformas de pre-venta' },
+                            { value: 5, label: 'Modelo sistemático' }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 'algorithms',
+                name: 'Algorithms',
+                shortName: 'Algoritmos',
+                icon: '🤖',
+                color: '#f59e0b',
+                category: 'scale',
+                description: 'Algoritmos e IA',
+                questions: [
+                    {
+                        id: 'a1',
+                        text: '¿Usa algoritmos/IA para optimizar procesos?',
+                        options: [
+                            { value: 1, label: 'Todo manual' },
+                            { value: 2, label: 'Fórmulas Excel básicas' },
+                            { value: 3, label: 'Software con recomendaciones' },
+                            { value: 4, label: 'Algoritmos para optimización' },
+                            { value: 5, label: 'IA avanzada completa' }
+                        ]
+                    },
+                    {
+                        id: 'a2',
+                        text: '¿Algoritmos predicen problemas?',
+                        options: [
+                            { value: 1, label: 'Solo reaccionamos' },
+                            { value: 2, label: 'Revisiones programadas' },
+                            { value: 3, label: 'Sensores con alertas' },
+                            { value: 4, label: 'Modelos predictivos' },
+                            { value: 5, label: 'IA predice todo' }
+                        ]
+                    },
+                    {
+                        id: 'a3',
+                        text: '¿Usa IA para personalización?',
+                        options: [
+                            { value: 1, label: 'Todo estándar' },
+                            { value: 2, label: 'Segmentación básica' },
+                            { value: 3, label: 'Ofertas personalizadas' },
+                            { value: 4, label: 'CRM con recomendaciones' },
+                            { value: 5, label: 'IA personaliza todo' }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 'leveraged',
+                name: 'Leveraged Assets',
+                shortName: 'Activos',
+                icon: '📦',
+                color: '#ef4444',
+                category: 'scale',
+                description: 'Activos compartidos',
+                questions: [
+                    {
+                        id: 'l1',
+                        text: '¿Arrienda o comparte activos?',
+                        options: [
+                            { value: 1, label: 'Compramos todo' },
+                            { value: 2, label: 'Arrendamos en emergencias' },
+                            { value: 3, label: 'Arrendamos regularmente' },
+                            { value: 4, label: 'Modelo mixto' },
+                            { value: 5, label: 'Asset-light total' }
+                        ]
+                    },
+                    {
+                        id: 'l2',
+                        text: '¿Usa plataformas para acceder a recursos?',
+                        options: [
+                            { value: 1, label: 'Todo propio' },
+                            { value: 2, label: 'Préstamos ocasionales' },
+                            { value: 3, label: 'Cooperativas locales' },
+                            { value: 4, label: 'Plataformas digitales' },
+                            { value: 5, label: 'Ecosistema on-demand' }
+                        ]
+                    },
+                    {
+                        id: 'l3',
+                        text: '¿Monetiza activos ociosos?',
+                        options: [
+                            { value: 1, label: 'Quedan ociosos' },
+                            { value: 2, label: 'Prestamos a conocidos' },
+                            { value: 3, label: 'Arrendamos manualmente' },
+                            { value: 4, label: 'Sistema formal de arriendo' },
+                            { value: 5, label: 'Plataforma digital 24/7' }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 'engagement',
+                name: 'Engagement',
+                shortName: 'Engagement',
+                icon: '🎮',
+                color: '#ec4899',
+                category: 'scale',
+                description: 'Engagement digital',
+                questions: [
+                    {
+                        id: 'e1',
+                        text: '¿Usa gamificación o incentivos digitales?',
+                        options: [
+                            { value: 1, label: 'Sin incentivos' },
+                            { value: 2, label: 'Descuentos básicos' },
+                            { value: 3, label: 'Programa de lealtad' },
+                            { value: 4, label: 'App con gamificación' },
+                            { value: 5, label: 'Sistema sofisticado' }
+                        ]
+                    },
+                    {
+                        id: 'e2',
+                        text: '¿Clientes interactúan frecuentemente?',
+                        options: [
+                            { value: 1, label: 'Solo al comprar' },
+                            { value: 2, label: 'Email/WhatsApp ocasional' },
+                            { value: 3, label: 'Interacciones en redes' },
+                            { value: 4, label: 'App móvil frecuente' },
+                            { value: 5, label: 'Engagement diario' }
+                        ]
+                    },
+                    {
+                        id: 'e3',
+                        text: '¿Feedback continuo de clientes?',
+                        options: [
+                            { value: 1, label: 'Sin feedback' },
+                            { value: 2, label: 'Encuesta anual' },
+                            { value: 3, label: 'Encuestas post-compra' },
+                            { value: 4, label: 'Rating tiempo real' },
+                            { value: 5, label: 'Loops con IA' }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 'interfaces',
+                name: 'Interfaces',
+                shortName: 'Interfaces',
+                icon: '🖥️',
+                color: '#06b6d4',
+                category: 'ideas',
+                description: 'Procesos y APIs',
+                questions: [
+                    {
+                        id: 'i1',
+                        text: '¿Procesos claros para gestionar externos?',
+                        options: [
+                            { value: 1, label: 'Sin procesos' },
+                            { value: 2, label: 'Ad-hoc' },
+                            { value: 3, label: 'Documentados' },
+                            { value: 4, label: 'Repetibles' },
+                            { value: 5, label: 'Automatizados' }
+                        ]
+                    },
+                    {
+                        id: 'i2',
+                        text: '¿Usa APIs?',
+                        options: [
+                            { value: 1, label: 'Sin APIs' },
+                            { value: 2, label: 'Integraciones básicas' },
+                            { value: 3, label: 'Algunas APIs' },
+                            { value: 4, label: 'Ecosistema APIs' },
+                            { value: 5, label: 'API-first' }
+                        ]
+                    },
+                    {
+                        id: 'i3',
+                        text: '¿Integra nuevas tecnologías rápido?',
+                        options: [
+                            { value: 1, label: '6+ meses' },
+                            { value: 2, label: '3-6 meses' },
+                            { value: 3, label: '1-2 meses' },
+                            { value: 4, label: 'Semanas' },
+                            { value: 5, label: 'Días' }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 'dashboards',
+                name: 'Dashboards',
+                shortName: 'Dashboards',
+                icon: '📊',
+                color: '#14b8a6',
+                category: 'ideas',
+                description: 'Métricas tiempo real',
+                questions: [
+                    {
+                        id: 'd1',
+                        text: '¿Dashboards en tiempo real?',
+                        options: [
+                            { value: 1, label: 'Sin dashboards' },
+                            { value: 2, label: 'Reportes semanales' },
+                            { value: 3, label: 'Dashboards diarios' },
+                            { value: 4, label: 'Tiempo real' },
+                            { value: 5, label: 'Command center 24/7' }
+                        ]
+                    },
+                    {
+                        id: 'd2',
+                        text: '¿Todos ven métricas?',
+                        options: [
+                            { value: 1, label: 'Solo gerencia' },
+                            { value: 2, label: 'En reuniones' },
+                            { value: 3, label: 'Reportes compartidos' },
+                            { value: 4, label: 'Dashboards accesibles' },
+                            { value: 5, label: 'Transparencia total' }
+                        ]
+                    },
+                    {
+                        id: 'd3',
+                        text: '¿Decisiones basadas en datos?',
+                        options: [
+                            { value: 1, label: 'Por intuición' },
+                            { value: 2, label: 'Datos históricos' },
+                            { value: 3, label: 'Reportes regulares' },
+                            { value: 4, label: 'Data tiempo real' },
+                            { value: 5, label: 'Decisiones automáticas' }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 'experimentation',
+                name: 'Experimentation',
+                shortName: 'Experimentación',
+                icon: '🔬',
+                color: '#a855f7',
+                category: 'ideas',
+                description: 'Cultura experimentación',
+                questions: [
+                    {
+                        id: 'exp1',
+                        text: '¿Experimenta regularmente?',
+                        options: [
+                            { value: 1, label: 'Nunca' },
+                            { value: 2, label: 'Muy ocasionalmente' },
+                            { value: 3, label: 'Algunas veces al año' },
+                            { value: 4, label: 'Varios pilotos' },
+                            { value: 5, label: 'Lean startup continuo' }
+                        ]
+                    },
+                    {
+                        id: 'exp2',
+                        text: '¿Tolerancia al fracaso?',
+                        options: [
+                            { value: 1, label: 'Inaceptable' },
+                            { value: 2, label: 'Tolerable con explicación' },
+                            { value: 3, label: 'Se entiende' },
+                            { value: 4, label: 'Fallar rápido es celebrado' },
+                            { value: 5, label: 'Cultura fail fast' }
+                        ]
+                    },
+                    {
+                        id: 'exp3',
+                        text: '¿Metodología científica?',
+                        options: [
+                            { value: 1, label: 'Solo probamos' },
+                            { value: 2, label: 'Análisis post' },
+                            { value: 3, label: 'Objetivos definidos' },
+                            { value: 4, label: 'Experimentos controlados' },
+                            { value: 5, label: 'A/B testing, MVPs' }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 'autonomy',
+                name: 'Autonomy',
+                shortName: 'Autonomía',
+                icon: '🦅',
+                color: '#f97316',
+                category: 'ideas',
+                description: 'Equipos autónomos',
+                questions: [
+                    {
+                        id: 'au1',
+                        text: '¿Equipos deciden sin aprobación?',
+                        options: [
+                            { value: 1, label: 'Todo aprobado por gerencia' },
+                            { value: 2, label: 'Decisiones menores' },
+                            { value: 3, label: 'Autonomía con presupuesto' },
+                            { value: 4, label: 'Equipos con OKRs' },
+                            { value: 5, label: 'Auto-organización total' }
+                        ]
+                    },
+                    {
+                        id: 'au2',
+                        text: '¿Equipos multidisciplinarios?',
+                        options: [
+                            { value: 1, label: 'Silos departamentales' },
+                            { value: 2, label: 'Ocasionalmente colaboran' },
+                            { value: 3, label: 'Equipos proyecto temporal' },
+                            { value: 4, label: 'Squads permanentes' },
+                            { value: 5, label: 'Mini-empresas autónomas' }
+                        ]
+                    },
+                    {
+                        id: 'au3',
+                        text: '¿Colaboradores proponen mejoras?',
+                        options: [
+                            { value: 1, label: 'Solo instrucciones' },
+                            { value: 2, label: 'Rara vez implementadas' },
+                            { value: 3, label: 'Buzón sugerencias' },
+                            { value: 4, label: 'Cualquiera puede liderar' },
+                            { value: 5, label: 'Intraemprendimiento' }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 'social',
+                name: 'Social Technologies',
+                shortName: 'Social Tech',
+                icon: '💬',
+                color: '#84cc16',
+                category: 'ideas',
+                description: 'Herramientas colaborativas',
+                questions: [
+                    {
+                        id: 'so1',
+                        text: '¿Herramientas colaborativas?',
+                        options: [
+                            { value: 1, label: 'Email y teléfono' },
+                            { value: 2, label: 'WhatsApp básico' },
+                            { value: 3, label: 'Google Drive/Dropbox' },
+                            { value: 4, label: 'Slack/Teams completo' },
+                            { value: 5, label: 'Stack colaboración async' }
+                        ]
+                    },
+                    {
+                        id: 'so2',
+                        text: '¿Conocimiento documentado?',
+                        options: [
+                            { value: 1, label: 'En cabezas de personas' },
+                            { value: 2, label: 'Documentos dispersos' },
+                            { value: 3, label: 'Carpetas compartidas' },
+                            { value: 4, label: 'Wiki organizada' },
+                            { value: 5, label: 'Knowledge management' }
+                        ]
+                    },
+                    {
+                        id: 'so3',
+                        text: '¿Trabajo remoto/asíncrono?',
+                        options: [
+                            { value: 1, label: 'Imposible' },
+                            { value: 2, label: 'Con dificultad' },
+                            { value: 3, label: 'Híbrido funcional' },
+                            { value: 4, label: 'Remoto efectivo' },
+                            { value: 5, label: 'Remote-first async' }
+                        ]
+                    }
+                ]
+            }
+        ];
+
+        // Funciones principales
+        function startEvaluation() {
+            const company = document.getElementById('companyName').value.trim();
+            const person = document.getElementById('personName').value.trim();
+            const email = document.getElementById('email').value.trim();
+            
+            if (!company || !person || !email) {
+                alert('Por favor complete los campos requeridos: Empresa, Nombre y Email');
+                return;
+            }
+            
+            contactData = {
+                companyName: company,
+                personName: person,
+                email: email,
+                position: document.getElementById('position').value,
+                phone: document.getElementById('phone').value,
+                sector: document.getElementById('sector').value
+            };
+            
+            document.getElementById('contactScreen').classList.add('hidden');
+            document.getElementById('evaluationScreen').classList.remove('hidden');
+            document.getElementById('companyNameDisplay').textContent = contactData.companyName;
+            
+            loadAttribute(0);
+        }
+
+        function loadAttribute(index) {
+            currentAttributeIndex = index;
+            const attr = exoAttributes[index];
+            
+            document.getElementById('currentIcon').textContent = attr.icon;
+            document.getElementById('currentAttributeName').textContent = attr.name;
+            document.getElementById('currentAttributeDesc').textContent = attr.description;
+            
+            const badge = document.getElementById('categoryBadge');
+            const categoryText = attr.category === 'core' ? '🎯 CORE' : 
+                                attr.category === 'scale' ? '⚡ SCALE - Externo' : 
+                                '💡 IDEAS - Interno';
+            badge.textContent = categoryText;
+            badge.style.backgroundColor = attr.color + '20';
+            badge.style.color = attr.color;
+            
+            renderQuestions(attr);
+            updateProgress();
+            updateNavButtons();
+        }
+
+        function renderQuestions(attr) {
+            const container = document.getElementById('questionsContainer');
+            container.innerHTML = '';
+            
+            attr.questions.forEach((question, qIdx) => {
+                const isAnswered = responses[question.id] !== undefined;
+                
+                const questionCard = document.createElement('div');
+                questionCard.className = 'question-card' + (isAnswered ? ' answered' : '');
+                
+                let html = `
+                    <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
+                        <div style="width: 40px; height: 40px; background: ${attr.color}; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0;">
+                            ${qIdx + 1}
+                        </div>
+                        <div style="flex: 1;">
+                            <p style="font-size: 1.125rem; font-weight: 600; color: #1f2937; margin-bottom: 0.5rem;">${question.text}</p>
+                            ${isAnswered ? '<p style="color: ' + attr.color + '; font-weight: 600; font-size: 0.875rem;">✓ Respondida</p>' : ''}
+                        </div>
+                    </div>
+                `;
+                
+                question.options.forEach(option => {
+                    const isSelected = responses[question.id] === option.value;
+                    html += `
+                        <div class="option ${isSelected ? 'selected' : ''}" onclick="selectOption('${question.id}', ${option.value}, '${attr.color}')">
+                            <div class="option-radio"></div>
+                            <span style="flex: 1;">${option.label}</span>
+                            <span class="badge" style="background: ${isSelected ? attr.color : '#e5e7eb'}; color: ${isSelected ? 'white' : '#6b7280'};">
+                                Nivel ${option.value}
+                            </span>
+                        </div>
+                    `;
+                });
+                
+                questionCard.innerHTML = html;
+                container.appendChild(questionCard);
+            });
+        }
+
+        function selectOption(questionId, value, color) {
+            responses[questionId] = value;
+            loadAttribute(currentAttributeIndex);
+        }
+
+        function updateProgress() {
+            const totalQuestions = exoAttributes.reduce((sum, attr) => sum + attr.questions.length, 0);
+            const answered = Object.keys(responses).length;
+            const percent = Math.round((answered / totalQuestions) * 100);
+            
+            document.getElementById('progressPercent').textContent = percent + '%';
+            document.getElementById('progressBar').style.width = percent + '%';
+        }
+
+        function updateNavButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const finishBtn = document.getElementById('finishBtn');
+            
+            prevBtn.disabled = currentAttributeIndex === 0;
+            prevBtn.style.opacity = currentAttributeIndex === 0 ? '0.5' : '1';
+            prevBtn.style.cursor = currentAttributeIndex === 0 ? 'not-allowed' : 'pointer';
+            
+            const currentAttr = exoAttributes[currentAttributeIndex];
+            const isComplete = currentAttr.questions.every(q => responses[q.id] !== undefined);
+            
+            if (currentAttributeIndex === exoAttributes.length - 1) {
+                nextBtn.classList.add('hidden');
+                finishBtn.classList.remove('hidden');
+                finishBtn.disabled = !isComplete;
+                finishBtn.style.opacity = isComplete ? '1' : '0.5';
+            } else {
+                nextBtn.classList.remove('hidden');
+                finishBtn.classList.add('hidden');
+                nextBtn.disabled = !isComplete;
+                nextBtn.style.opacity = isComplete ? '1' : '0.5';
+            }
+        }
+
+        function previousAttribute() {
+            if (currentAttributeIndex > 0) {
+                loadAttribute(currentAttributeIndex - 1);
+            }
+        }
+
+        function nextAttribute() {
+            const currentAttr = exoAttributes[currentAttributeIndex];
+            const isComplete = currentAttr.questions.every(q => responses[q.id] !== undefined);
+            
+            if (isComplete && currentAttributeIndex < exoAttributes.length - 1) {
+                loadAttribute(currentAttributeIndex + 1);
+            }
+        }
+
+        function calculateAttributeScore(attr) {
+            return attr.questions.reduce((sum, q) => sum + (responses[q.id] || 0), 0);
+        }
+
+        function calculateCategoryScore(category) {
+            if (category === 'mtp') {
+                return calculateAttributeScore(exoAttributes[0]);
+            }
+            return exoAttributes
+                .filter(attr => attr.category === category)
+                .reduce((sum, attr) => sum + calculateAttributeScore(attr), 0);
+        }
+
+        function getExOLevel(totalScore, maxScore) {
+            const percentage = (totalScore / maxScore) * 100;
+            if (percentage < 20) return {
+                level: 'Organización Lineal',
+                color: '#ef4444',
+                icon: '🐌',
+                description: 'Estructura tradicional sin atributos exponenciales'
+            };
+            if (percentage < 40) return {
+                level: 'Organización en Transición',
+                color: '#f59e0b',
+                icon: '🚶',
+                description: 'Primeros atributos ExO implementados'
+            };
+            if (percentage < 60) return {
+                level: 'Organización Exponencial Emergente',
+                color: '#eab308',
+                icon: '🏃',
+                description: 'Varios atributos ExO funcionando'
+            };
+            if (percentage < 80) return {
+                level: 'Organización Exponencial',
+                color: '#3b82f6',
+                icon: '🚀',
+                description: 'Mayoría de atributos ExO implementados'
+            };
+            return {
+                level: 'Organización Exponencial Líder',
+                color: '#10b981',
+                icon: '🌟',
+                description: '11 atributos ExO completamente integrados'
+            };
+        }
+
+        function showResults() {
+            const totalScore = Object.values(responses).reduce((a, b) => a + b, 0);
+            const maxScore = exoAttributes.reduce((sum, attr) => sum + (attr.questions.length * 5), 0);
+            const exoLevel = getExOLevel(totalScore, maxScore);
+            
+            document.getElementById('evaluationScreen').classList.add('hidden');
+            document.getElementById('resultsScreen').classList.remove('hidden');
+            
+            document.getElementById('resultsCompanyName').textContent = contactData.companyName;
+            document.getElementById('scoreValue').textContent = totalScore;
+            document.getElementById('scoreBar').style.width = ((totalScore / maxScore) * 100) + '%';
+            document.getElementById('scoreBar').style.backgroundColor = exoLevel.color;
+            document.getElementById('levelIcon').textContent = exoLevel.icon;
+            document.getElementById('levelName').textContent = exoLevel.level;
+            document.getElementById('levelName').style.color = exoLevel.color;
+            document.getElementById('levelDescription').textContent = exoLevel.description;
+            
+            const mtpScore = calculateCategoryScore('mtp');
+            const scaleScore = calculateCategoryScore('scale');
+            const ideasScore = calculateCategoryScore('ideas');
+            
+            document.getElementById('mtpScore').textContent = mtpScore;
+            document.getElementById('mtpBar').style.width = ((mtpScore / 10) * 100) + '%';
+            
+            document.getElementById('scaleScore').textContent = scaleScore;
+            document.getElementById('scaleBar').style.width = ((scaleScore / 75) * 100) + '%';
+            
+            document.getElementById('ideasScore').textContent = ideasScore;
+            document.getElementById('ideasBar').style.width = ((ideasScore / 80) * 100) + '%';
+            
+            renderPriorities();
+        }
+
+        function renderPriorities() {
+            const priorities = exoAttributes
+                .map(attr => ({
+                    ...attr,
+                    score: calculateAttributeScore(attr),
+                    maxScore: attr.questions.length * 5
+                }))
+                .sort((a, b) => (a.score / a.maxScore) - (b.score / b.maxScore))
+                .slice(0, 3);
+            
+            const container = document.getElementById('prioritiesContainer');
+            container.innerHTML = '';
+            
+            priorities.forEach((attr, idx) => {
+                const percentage = Math.round((attr.score / attr.maxScore) * 100);
+                const html = `
+                    <div class="priority-item">
+                        <div class="priority-number">${idx + 1}</div>
+                        <div style="flex: 1;">
+                            <h3 style="font-size: 1.125rem; font-weight: bold; margin-bottom: 0.5rem;">
+                                ${attr.icon} ${attr.name}
+                            </h3>
+                            <p style="color: #6b7280; margin-bottom: 0.75rem;">
+                                <strong>Nivel actual:</strong> ${attr.score}/${attr.maxScore} (${percentage}%)
+                            </p>
+                            <div style="width: 100%; height: 8px; background: #e5e7eb; border-radius: 999px; overflow: hidden;">
+                                <div style="height: 100%; width: ${percentage}%; background: linear-gradient(90deg, #8b5cf6, #3b82f6); border-radius: 999px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += html;
+            });
+        }
+
+        async function submitToWeb3Forms() {
+            if (WEB3FORMS_ACCESS_KEY === "TU_ACCESS_KEY_AQUI") {
+                showSubmitStatus('error', '⚠️ Por favor configura tu Web3Forms Access Key. Obtén una gratis en: https://web3forms.com');
+                return;
+            }
+            
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = '⏳ Enviando...';
+            
+            try {
+                const totalScore = Object.values(responses).reduce((a, b) => a + b, 0);
+                const maxScore = exoAttributes.reduce((sum, attr) => sum + (attr.questions.length * 5), 0);
+                const exoLevel = getExOLevel(totalScore, maxScore);
+                
+                const priorities = exoAttributes
+                    .map(attr => ({
+                        name: attr.name,
+                        score: calculateAttributeScore(attr),
+                        maxScore: attr.questions.length * 5
+                    }))
+                    .sort((a, b) => (a.score / a.maxScore) - (b.score / b.maxScore))
+                    .slice(0, 3)
+                    .map((attr, idx) => `${idx+1}. ${attr.name}: ${attr.score}/${attr.maxScore}`)
+                    .join(' | ');
+                
+                const formData = {
+                    access_key: WEB3FORMS_ACCESS_KEY,
+                    subject: `Nueva Evaluación ExO Canvas - ${contactData.companyName}`,
+                    from_name: 'ExO Canvas Evaluator',
+                    empresa: contactData.companyName,
+                    nombre: contactData.personName,
+                    email: contactData.email,
+                    cargo: contactData.position,
+                    telefono: contactData.phone,
+                    sector: contactData.sector,
+                    puntaje_total: `${totalScore}/${maxScore}`,
+                    porcentaje: `${((totalScore/maxScore)*100).toFixed(1)}%`,
+                    nivel_exo: exoLevel.level,
+                    mtp_score: `${calculateCategoryScore('mtp')}/10`,
+                    scale_score: `${calculateCategoryScore('scale')}/75`,
+                    ideas_score: `${calculateCategoryScore('ideas')}/80`,
+                    prioridades: priorities,
+                    fecha: new Date().toLocaleString('es-ES')
+                };
+                
+                const response = await fetch('https://api.web3forms.com/submit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showSubmitStatus('success', '✅ Resultados enviados exitosamente! Revisa tu email.');
+                    submitBtn.style.display = 'none';
+                } else {
+                    throw new Error(data.message || 'Error al enviar');
+                }
+            } catch (error) {
+                showSubmitStatus('error', `❌ Error: ${error.message}`);
+                submitBtn.disabled = false;
+                submitBtn.textContent = '📧 Reintentar Envío';
+            }
+        }
+
+        function showSubmitStatus(type, message) {
+            const statusDiv = document.getElementById('submitStatus');
+            statusDiv.className = 'alert alert-' + type;
+            statusDiv.textContent = message;
+            statusDiv.classList.remove('hidden');
+        }
+
+        function resetEvaluation() {
+            if (confirm('¿Desea iniciar una nueva evaluación? Se perderán los datos actuales.')) {
+                responses = {};
+                contactData = {};
+                currentAttributeIndex = 0;
+                document.getElementById('resultsScreen').classList.add('hidden');
+                document.getElementById('contactScreen').classList.remove('hidden');
+                document.getElementById('companyName').value = '';
+                document.getElementById('personName').value = '';
+                document.getElementById('email').value = '';
+                document.getElementById('position').value = '';
+                document.getElementById('phone').value = '';
+                document.getElementById('sector').value = '';
+            }
+        }
+    </script>
+</body>
+</html>
